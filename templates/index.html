@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spinal X-ray Classification</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #f8c8c8, #f3e6f7);
+            color: #333;
+            padding: 50px 0;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 42px;
+            color: #3b3b3b;
+            margin-bottom: 30px;
+            font-weight: 600;
+        }
+
+        .container {
+            max-width: 650px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .container:hover {
+            transform: translateY(-10px);
+        }
+
+        input[type="file"] {
+            font-size: 18px;
+            padding: 12px;
+            width: 80%;
+            border-radius: 8px;
+            border: 2px solid #d5a6e5;
+            margin-bottom: 30px;
+            background-color: #f9f0f6;
+            color: #6b6b6b;
+            transition: all 0.3s ease;
+        }
+
+        input[type="file"]:hover {
+            border-color: #e5b8e5;
+            background-color: #f3e6f7;
+        }
+
+        button {
+            font-size: 18px;
+            background-color: #ff80bf;
+            color: white;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 80%;
+            margin-top: 20px;
+        }
+
+        button:hover {
+            background-color: #bf98d6;
+            transform: scale(1.05);
+        }
+
+        #prediction {
+            margin-top: 30px;
+            font-size: 22px;
+            font-weight: 600;
+            color: #7a4f96;
+            animation: fadeIn 2s ease-in-out;
+        }
+
+        .error {
+            color: #f54e42;
+            font-weight: 600;
+            font-size: 20px;
+        }
+
+        .success {
+            color: #34c38f;
+            font-weight: 600;
+            font-size: 20px;
+        }
+
+        .footer {
+            margin-top: 40px;
+            color: #6e6e6e;
+            font-size: 16px;
+        }
+
+        .footer a {
+            text-decoration: none;
+            color: #ff80bf;
+            font-weight: bold;
+        }
+
+        @keyframes fadeIn {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Spinal X-ray Classification</h1>
+        <form id="upload-form" enctype="multipart/form-data">
+            <input type="file" name="file" id="file-input" required>
+            <br>
+            <button type="submit">Upload and Predict</button>
+        </form>
+
+        <div id="prediction"></div>
+    </div>
+
+    <div class="footer">
+        <p>Created with ❤️ by <a href="#">Asheel , hafeez and sulthan</a>. All rights reserved.</p>
+    </div>
+
+    <script>
+        document.getElementById("upload-form").addEventListener("submit", async function(event) {
+            event.preventDefault();
+            const formData = new FormData(this);
+
+            try {
+                const response = await fetch("/predict", {
+                    method: "POST",
+                    body: formData,
+                });
+
+                const result = await response.json();
+
+                if (result.error) {
+                    document.getElementById("prediction").innerHTML = `<div class="error">Error: ${result.error}</div>`;
+                } else {
+                    document.getElementById("prediction").innerHTML = `<div class="success">Prediction: ${result.prediction}</div>`;
+                }
+
+            } catch (error) {
+                document.getElementById("prediction").innerHTML = `<div class="error">An unexpected error occurred. Please try again later.</div>`;
+            }
+        });
+    </script>
+
+</body>
+</html>

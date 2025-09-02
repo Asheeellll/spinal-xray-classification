@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spinal X-ray Classification</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+        }
+        .container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        input[type="file"] {
+            display: block;
+            margin: 20px auto;
+        }
+        button {
+            display: block;
+            margin: 20px auto;
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .result {
+            text-align: center;
+            font-size: 18px;
+            margin-top: 20px;
+        }
+        .loading {
+            display: none;
+            text-align: center;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Spinal X-ray Classification</h1>
+    
+    <!-- Image Upload Form -->
+    <input type="file" id="xrayImage" accept="image/*">
+    
+    <!-- Submit Button -->
+    <button id="uploadBtn">Classify Image</button>
+    
+    <!-- Loading Message -->
+    <div id="loading" class="loading">Loading...</div>
+    
+    <!-- Result Display -->
+    <div id="result" class="result"></div>
+</div>
+
+<script>
+    document.getElementById('uploadBtn').addEventListener('click', function() {
+        const fileInput = document.getElementById('xrayImage');
+        const file = fileInput.files[0];
+
+        if (!file) {
+            alert("Please select an image first.");
+            return;
+        }
+
+        // Show loading message
+        document.getElementById('loading').style.display = 'block';
+        document.getElementById('result').textContent = '';
+
+        const formData = new FormData();
+        formData.append('file', file);
+
+        // Send the image to the backend
+        fetch('http://127.0.0.1:5000/predict', {  // Update this URL if deployed
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('loading').style.display = 'none';
+
+            if (data.error) {
+                document.getElementById('result').textContent = `Error: ${data.error}`;
+            } else {
+                document.getElementById('result').textContent = `Predicted Class: ${data.prediction}`;
+            }
+        })
+        .catch(error => {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('result').textContent = `Error: ${error.message}`;
+        });
+    });
+</script>
+
+</body>
+</html>
